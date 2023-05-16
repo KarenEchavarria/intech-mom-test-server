@@ -1,11 +1,29 @@
 import User from "../../../models/user.js";
 
+/**
+ * @openapi
+ * /users:
+ *   get:
+ *     description: Welcome to swagger-jsdoc!
+ *     responses:
+ *       200:
+ *         description: Returns a mysterious string.
+ */
 const getAllUsers = async (request, response, next) => {
 	try {
-		const arrayUsers = await User.find();
-		return response.status(200).json({
-			listaUsers: arrayUsers
-		})
+
+		const { rol, email } = request.query;
+
+		const filters = {
+			...rol && { rol },
+			...email && { email }
+		};
+
+		console.log('filters', filters)
+
+		const arrayUsers = await User.find(filters);
+
+		return response.status(200).json(arrayUsers)
 	} catch (error) {
 		response.status(400).json({
 			error
@@ -13,8 +31,15 @@ const getAllUsers = async (request, response, next) => {
 	}
 }
 
-//busqueda con :id
-const getUserById = async (request, response) => {
+/**
+ * @openapi
+ * /users/{id}:
+ *   get:
+ *     description: Welcome to swagger-jsdoc!
+ *     responses:
+ *       200:
+ *         description: Returns a mysterious string.
+ */const getUserById = async (request, response) => {
 	const id = request.params.id
 	const userid = await User.findById(id)
 	if (userid) {
